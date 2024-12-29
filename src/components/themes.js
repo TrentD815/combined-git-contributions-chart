@@ -1,6 +1,6 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { themes } from "github-contributions-canvas";
+import React from "react"
+import PropTypes from "prop-types"
+import { themes } from "github-contributions-canvas"
 
 const availableThemes = {
   standard: "GitHub",
@@ -15,9 +15,9 @@ const availableThemes = {
   sunny: "Sunny",
   pink: "Pink",
   YlGnBu: "YlGnBu",
-  solarizedDark: 'Solarized Dark',
-  solarizedLight: 'Solarized Light'
-};
+  solarizedDark: "Solarized Dark",
+  solarizedLight: "Solarized Light"
+}
 
 const Preview = ({ themeName }) => (
   <div
@@ -29,7 +29,7 @@ const Preview = ({ themeName }) => (
     <span style={{ backgroundColor: themes[themeName].grade3 }}></span>
     <span style={{ backgroundColor: themes[themeName].grade4 }}></span>
   </div>
-);
+)
 
 const ThemeSelector = ({ currentTheme, onChangeTheme }) => (
   <div className="App-themes">
@@ -52,11 +52,11 @@ const ThemeSelector = ({ currentTheme, onChangeTheme }) => (
       ))}
     </div>
   </div>
-);
+)
 
 ThemeSelector.propTypes = {
   onChangeTheme: PropTypes.func.isRequired,
   currentTheme: PropTypes.string.isRequired
-};
+}
 
-export default ThemeSelector;
+export default ThemeSelector

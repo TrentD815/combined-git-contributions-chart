@@ -11,6 +11,6 @@ export const success = {
 const alerts = {
   error,
   success
-};
+}
 
-export default alerts;
+export default alerts

@@ -1,9 +1,9 @@
-import { Toaster } from "react-hot-toast";
-import "normalize.css/normalize.css";
-import "../styles/index.css";
-import "../styles/App.css";
+import { Toaster } from "react-hot-toast"
+import "normalize.css/normalize.css"
+import "../styles/index.css"
+import "../styles/App.css"
 
-import Head from "next/head";
+import Head from "next/head"
 
 const App = ({ Component, pageProps }) => (
   <>
@@ -17,6 +17,6 @@ const App = ({ Component, pageProps }) => (
     <Component {...pageProps} />
     <Toaster position="bottom-right" />
   </>
-);
+)
 
-export default App;
+export default App

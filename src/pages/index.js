@@ -1,5 +1,12 @@
-import { TbShare, TbDownload, TbCopy, TbBrandGithub, TbBrandBitbucket, TbBrandGitlab } from "react-icons/tb";
-import React, { useRef, useState, useEffect } from "react";
+import {
+  TbShare,
+  TbDownload,
+  TbCopy,
+  TbBrandGithub,
+  TbBrandBitbucket,
+  TbBrandGitlab
+} from "react-icons/tb"
+import React, { useRef, useState, useEffect } from "react"
 import {
   download,
   fetchData,
@@ -7,91 +14,91 @@ import {
   cleanUsername,
   share,
   copyToClipboard
-} from "../utils/export";
-import ThemeSelector from "../components/themes";
+} from "../utils/export"
+import ThemeSelector from "../components/themes"
 
 const App = () => {
-  const inputRef = useRef();
-  const canvasRef = useRef();
-  const contentRef = useRef();
-  const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("");
-  const [theme, setTheme] = useState("standard");
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+  const inputRef = useRef()
+  const canvasRef = useRef()
+  const contentRef = useRef()
+  const [loading, setLoading] = useState(false)
+  const [username, setUsername] = useState("")
+  const [theme, setTheme] = useState("standard")
+  const [data, setData] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     if (!data) {
-      return;
+      return
     }
-    draw();
-  }, [data, theme]);
+    draw()
+  }, [data, theme])
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    setUsername(cleanUsername(username));
-    setLoading(true);
-    setError(null);
-    setData(null);
+    setUsername(cleanUsername(username))
+    setLoading(true)
+    setError(null)
+    setData(null)
 
     fetchData(cleanUsername(username))
       .then((data) => {
-        setLoading(false);
+        setLoading(false)
 
         if (data.years.length === 0) {
-          setError("Could not find your profile");
+          setError("Could not find your profile")
         } else {
-          setData(data);
+          setData(data)
         }
       })
       .catch((err) => {
-        console.log(err);
-        setLoading(false);
-        setError("I could not check your profile successfully...");
-      });
-  };
+        console.log(err)
+        setLoading(false)
+        setError("I could not check your profile successfully...")
+      })
+  }
 
   const onDownload = (e) => {
-    e.preventDefault();
-    download(canvasRef.current);
-  };
+    e.preventDefault()
+    download(canvasRef.current)
+  }
 
   const onCopy = (e) => {
-    e.preventDefault();
-    copyToClipboard(canvasRef.current);
-  };
+    e.preventDefault()
+    copyToClipboard(canvasRef.current)
+  }
 
   const onDownloadJson = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (data != null) {
-      downloadJSON(data);
+      downloadJSON(data)
     }
-  };
+  }
 
   const onShare = (e) => {
-    e.preventDefault();
-    share(canvasRef.current);
-  };
+    e.preventDefault()
+    share(canvasRef.current)
+  }
 
   const draw = async () => {
     if (!canvasRef.current || !data) {
-      setError("Something went wrong... Check back later.");
-      return;
+      setError("Something went wrong... Check back later.")
+      return
     }
 
-    const { drawContributions } = await import("github-contributions-canvas");
+    const { drawContributions } = await import("github-contributions-canvas")
 
     drawContributions(canvasRef.current, {
       data,
       username: username,
       themeName: theme,
       footerText: "Made by @TrentD815"
-    });
+    })
     contentRef.current.scrollIntoView({
       behavior: "smooth"
-    });
-  };
+    })
+  }
 
   const _renderGithubButton = () => {
     return (
@@ -106,8 +113,8 @@ const App = () => {
           Star
         </a>
       </div>
-    );
-  };
+    )
+  }
 
   const _renderLoading = () => {
     return (
@@ -117,8 +124,8 @@ const App = () => {
           <p>Please wait, pulling data from ...</p>
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   const _renderGraphs = () => {
     return (
@@ -131,15 +138,30 @@ const App = () => {
         {data !== null && (
           <>
             <div className="App-buttons">
-              <button className="App-download-button" onClick={onCopy} type="button">
-                <TbCopy size={18}/>Copy
+              <button
+                className="App-download-button"
+                onClick={onCopy}
+                type="button"
+              >
+                <TbCopy size={18} />
+                Copy
               </button>
-              <button className="App-download-button" onClick={onDownload} type="button">
-                <TbDownload size={18}/>Download
+              <button
+                className="App-download-button"
+                onClick={onDownload}
+                type="button"
+              >
+                <TbDownload size={18} />
+                Download
               </button>
               {global.navigator && "share" in navigator && (
-                <button className="App-download-button" onClick={onShare} type="button">
-                  <TbShare size={18}/>Share
+                <button
+                  className="App-download-button"
+                  onClick={onShare}
+                  type="button"
+                >
+                  <TbShare size={18} />
+                  Share
                 </button>
               )}
             </div>
@@ -147,8 +169,8 @@ const App = () => {
           </>
         )}
       </div>
-    );
-  };
+    )
+  }
 
   const _renderForm = () => {
     return (
@@ -170,20 +192,27 @@ const App = () => {
           {loading ? "Generating..." : "Generate!"}
         </button>
       </form>
-    );
-  };
-  
+    )
+  }
+
   const _renderVCSSelect = () => {
     return (
       <div className="App-buttons">
         <button className="App-download-button" onClick={onCopy} type="button">
-          <TbBrandGithub size={18}/>GitHub
+          <TbBrandGithub size={18} />
+          GitHub
         </button>
-        <button className="App-download-button" onClick={onDownload} type="button">
-          <TbBrandBitbucket size={18}/>Bitbucket
+        <button
+          className="App-download-button"
+          onClick={onDownload}
+          type="button"
+        >
+          <TbBrandBitbucket size={18} />
+          Bitbucket
         </button>
         <button className="App-download-button" onClick={onShare} type="button">
-          <TbBrandGitlab size={18}/>Gitlab
+          <TbBrandGitlab size={18} />
+          Gitlab
         </button>
       </div>
     )
@@ -194,11 +223,11 @@ const App = () => {
       <div className="App-error App-centered">
         <p>{error}</p>
       </div>
-    );
-  };
+    )
+  }
 
   const _renderDownloadAsJSON = () => {
-    if (data === null) return;
+    if (data === null) return
     return (
       <a href="#" onClick={onDownloadJson}>
         <span role="img" aria-label="Bar Chart">
@@ -206,8 +235,8 @@ const App = () => {
         </span>{" "}
         Download data as JSON for your own visualizations
       </a>
-    );
-  };
+    )
+  }
 
   return (
     <div className="App">
@@ -237,7 +266,7 @@ const App = () => {
         {_renderGraphs()}
       </section>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
