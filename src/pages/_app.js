@@ -9,10 +9,10 @@ import Head from "next/head";
 const App = ({ Component, pageProps }) => (
   <>
     <Head>
-      <title>GitHub Contributions Chart Generator</title>
+      <title>Combined Version Control Contributions Chart Generator</title>
       <meta
         name="description"
-        content="See all of your GitHub contributions in one image!"
+        content="See all of your version control contributions in one image!"
       />
     </Head>
     <Component {...pageProps} />

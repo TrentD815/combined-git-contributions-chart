@@ -86,7 +86,7 @@ const App = () => {
       data,
       username: username,
       themeName: theme,
-      footerText: "Made by @sallar & friends - github-contributions.vercel.app"
+      footerText: "Made by @TrentD815"
     });
     contentRef.current.scrollIntoView({
       behavior: "smooth"
@@ -98,10 +98,10 @@ const App = () => {
       <div className="App-github-button">
         <a
           className="github-button"
-          href="https://github.com/sallar/github-contributions-chart"
+          href="https://github.com/TrentD815/combined-git-contributions-chart"
           data-size="large"
           data-show-count="true"
-          aria-label="Star sallar/github-contribution-chart on GitHub"
+          aria-label="Star TrentD815/combined-git-contribution-chart on GitHub"
         >
           Star
         </a>
@@ -114,7 +114,7 @@ const App = () => {
       <div className="App-centered">
         <div className="App-loading">
           <img src={"/loading.gif"} alt="Loading..." width={200} />
-          <p>Please wait, I’m visiting your profile...</p>
+          <p>Please wait, pulling data from ...</p>
         </div>
       </div>
     );
@@ -213,8 +213,8 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <div className="App-logo">
-          <img src="/topguntocat.png" width={200} alt="Topguntocat" />
-          <h1>GitHub Contributions Chart Generator</h1>
+          <img src="/vcs.webp" width={200} alt="all vcs logos" />
+          <h1>Combined Version Control Contributions Chart Generator</h1>
           <h4>All your contributions in one image!</h4>
         </div>
         {_renderForm()}
@@ -225,27 +225,16 @@ const App = () => {
         {_renderGithubButton()}
         <footer>
           <p>
-            Not affiliated with GitHub Inc. Octocat illustration from{" "}
-            <a href="https://octodex.github.com/topguntocat/" target="_blank">
-              GitHub Octodex
-            </a>
-            .
+            Not affiliated with GitHub, Gitlab, Atlassian, AWS, or Microsoft
           </p>
           {_renderDownloadAsJSON()}
-          <div className="App-powered">
-            <a
-              href="https://vercel.com/?utm_source=github-contributions-chart&utm_campaign=oss"
-              target="_blank"
-            >
-              <img src="/powered-by-vercel.svg" alt="Powered by Vercel" />
-            </a>
-          </div>
         </footer>
       </header>
       <section className="App-content" ref={contentRef}>
         {loading && _renderLoading()}
         {error !== null && _renderError()}
         {_renderGraphs()}
+        {}
       </section>
     </div>
   );

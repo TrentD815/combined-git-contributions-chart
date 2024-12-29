@@ -41,8 +41,8 @@ export async function share(canvas) {
     canvas.toBlob(async (blob) => {
       navigator
         .share({
-          title: "GitHub Contributions",
-          text: "Check out my #GitHubContributions history over time. A free tool by @sallar and friends. https://github-contributions.vercel.app",
+          title: "Combined Git Contributions",
+          text: "Check out my version control contribution history over time. A free tool by @TrentD815",
           files: [
             new File([blob], "contributions.png", {
               type: blob.type
@@ -60,8 +60,6 @@ export async function share(canvas) {
 
 export async function copyToClipboard(canvas) {
   if ("ClipboardItem" in window) {
-    // https://bugs.webkit.org/show_bug.cgi?id=222262
-    // https://web.dev/async-clipboard/
     const item = new ClipboardItem({
       "image/png": new Promise((resolve) => {
         canvas.toBlob(resolve, "image/png");
