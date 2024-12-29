@@ -1,4 +1,4 @@
-import { TbBrandTwitter, TbShare, TbDownload, TbCopy } from "react-icons/tb";
+import { TbShare, TbDownload, TbCopy, TbBrandGithub, TbBrandBitbucket, TbBrandGitlab } from "react-icons/tb";
 import React, { useRef, useState, useEffect } from "react";
 import {
   download,
@@ -131,34 +131,18 @@ const App = () => {
         {data !== null && (
           <>
             <div className="App-buttons">
-              <button
-                className="App-download-button"
-                onClick={onCopy}
-                type="button"
-              >
-                <TbCopy size={18} />
-                Copy
+              <button className="App-download-button" onClick={onCopy} type="button">
+                <TbCopy size={18}/>Copy
               </button>
-              <button
-                className="App-download-button"
-                onClick={onDownload}
-                type="button"
-              >
-                <TbDownload size={18} />
-                Download
+              <button className="App-download-button" onClick={onDownload} type="button">
+                <TbDownload size={18}/>Download
               </button>
               {global.navigator && "share" in navigator && (
-                <button
-                  className="App-download-button"
-                  onClick={onShare}
-                  type="button"
-                >
-                  <TbShare size={18} />
-                  Share
+                <button className="App-download-button" onClick={onShare} type="button">
+                  <TbShare size={18}/>Share
                 </button>
               )}
             </div>
-
             <canvas ref={canvasRef} />
           </>
         )}
@@ -188,6 +172,22 @@ const App = () => {
       </form>
     );
   };
+  
+  const _renderVCSSelect = () => {
+    return (
+      <div className="App-buttons">
+        <button className="App-download-button" onClick={onCopy} type="button">
+          <TbBrandGithub size={18}/>GitHub
+        </button>
+        <button className="App-download-button" onClick={onDownload} type="button">
+          <TbBrandBitbucket size={18}/>Bitbucket
+        </button>
+        <button className="App-download-button" onClick={onShare} type="button">
+          <TbBrandGitlab size={18}/>Gitlab
+        </button>
+      </div>
+    )
+  }
 
   const _renderError = () => {
     return (
@@ -214,10 +214,11 @@ const App = () => {
       <header className="App-header">
         <div className="App-logo">
           <img src="/vcs.webp" width={200} alt="all vcs logos" />
-          <h1>Combined Version Control Contributions Chart Generator</h1>
+          <h1>Combined VCS Contributions Chart Generator</h1>
           <h4>All your contributions in one image!</h4>
         </div>
         {_renderForm()}
+        {_renderVCSSelect()}
         <ThemeSelector
           currentTheme={theme}
           onChangeTheme={(themeName) => setTheme(themeName)}
@@ -225,7 +226,7 @@ const App = () => {
         {_renderGithubButton()}
         <footer>
           <p>
-            Not affiliated with GitHub, Gitlab, Atlassian, AWS, or Microsoft
+            Not affiliated with GitHub, Gitlab, Atlassian, Amazon, or Microsoft
           </p>
           {_renderDownloadAsJSON()}
         </footer>
@@ -234,7 +235,6 @@ const App = () => {
         {loading && _renderLoading()}
         {error !== null && _renderError()}
         {_renderGraphs()}
-        {}
       </section>
     </div>
   );

@@ -19,7 +19,7 @@
     --input-border: rgb(55, 68, 75);
     --button-disabled: rgb(42, 52, 57);
     --button-disabled-border: var(--input-border);
-    --loading-text: #rgb(164, 157, 145);
+    --loading-text: rgb(164, 157, 145);
     --input-text: #fff;
   }
 }
