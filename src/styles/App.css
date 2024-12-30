@@ -240,7 +240,7 @@ footer a {
   text-decoration: none;
 }
 
-@media all and (max-width: 500px) {
+@media all {
   .App-header {
     padding: 1rem;
     font-size: 0.9em;
