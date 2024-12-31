@@ -1,9 +1,10 @@
-import { TbShare, TbDownload, TbCopy, TbBrandGithub, TbBrandBitbucket, TbBrandGitlab } from "react-icons/tb"
 import React, { useRef, useState, useEffect } from "react"
+import { TbShare, TbDownload, TbCopy, TbBrandGithub, TbBrandBitbucket, TbBrandGitlab } from "react-icons/tb"
 import { download, fetchData, downloadJSON, cleanUsername, share, copyToClipboard } from "../utils/export"
 import ThemeSelector from "../components/themes"
-import makeAnimated from 'react-select/animated';
-import Select, { InputActionMeta } from 'react-select'
+import makeAnimated from 'react-select/animated'
+import Select from 'react-select'
+import { MuiChipsInput } from "mui-chips-input"
 
 const App = () => {
   const inputRef = useRef()
@@ -14,10 +15,13 @@ const App = () => {
   const [bitbucketUsername, setBitbucketUsername] = useState("")
   const [bitbucketAppPassword, setBitbucketAppPassword] = useState("")
   const [bitbucketWorkspace, setBitbucketWorkspace] = useState("")
+  const [bitbucketRepoChips, setBitbucketRepoChips] = React.useState([])
+  const [vcsSelection, setVcsSelection] = React.useState([])
   const [theme, setTheme] = useState("standard")
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const animatedComponents = makeAnimated();
+
   const options = [
     { value: 'GitHub', label: 'GitHub' },
     { value: 'Bitbucket', label: 'Bitbucket' },
@@ -31,7 +35,13 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-
+    console.log("Bitbucket form items",{
+      vcsSelection,
+      bitbucketUsername,
+      bitbucketAppPassword,
+      bitbucketWorkspace,
+      bitbucketRepoChips
+    })
     setUsername(cleanUsername(username))
     setLoading(true)
     setError(null)
@@ -57,12 +67,19 @@ const App = () => {
   const onBitbucketSelect = () => {
     alert("Bitbucket selected")
   }
+
   const onGithubSelect = () => {
     alert("Github selected")
   }
+
   const onGitlabSelect = () => {
     alert("Gitlab selected")
   }
+
+  const handleBitbucketChipChange = (chips) => {
+    setBitbucketRepoChips(chips)
+  }
+
   const onDownload = (e) => {
     e.preventDefault()
     download(canvasRef.current)
@@ -85,22 +102,10 @@ const App = () => {
     share(canvasRef.current)
   }
   const onVCSInputChange = (inputValue, { action, prevInputValue }) => {
-    console.log("Action", action)
-    console.log("Prev input value",prevInputValue)
-    if (action === 'select-option') {
-      console.log("Showing form fields for", inputValue)
-      return inputValue;
+    if (action === 'select-option' || action === "remove-value" || action === "clear") {
+      setVcsSelection(inputValue)
     }
-    if (action === "remove-value") {
-      console.log("Removing form fields for", inputValue)
-      return inputValue;
-    }
-    if (action === "clear") {
-      console.log("Hiding all form fields", inputValue)
-      return inputValue;
-    }
-    return prevInputValue;
-  };
+  }
 
   const draw = async () => {
     if (!canvasRef.current || !data) {
@@ -114,7 +119,7 @@ const App = () => {
       data,
       username: username,
       themeName: theme,
-      footerText: "Made by @TrentD815"
+      footerText: "Made by @Sallar on GitHub"
     })
     contentRef.current.scrollIntoView({
       behavior: "smooth"
@@ -124,13 +129,8 @@ const App = () => {
   const _renderGithubButton = () => {
     return (
       <div className="App-github-button">
-        <a
-          className="github-button"
-          href="https://github.com/TrentD815/combined-git-contributions-chart"
-          data-size="large"
-          data-show-count="true"
-          aria-label="Star TrentD815/combined-git-contribution-chart on GitHub"
-        >
+        <a className="github-button" href="https://github.com/TrentD815/combined-git-contributions-chart"
+          data-size="large" data-show-count="true" aria-label="Star TrentD815/combined-git-contribution-chart on GitHub">
           Star
         </a>
       </div>
@@ -180,22 +180,30 @@ const App = () => {
 
   const _renderForm = () => {
     return (
-
         <form onSubmit={handleSubmit}>
-          <h3>GitHub</h3>
+          <Select
+            instanceId="eaa53c4b-392e-402e-a779-57636ddc5db3" isMulti options={options}
+            className="basic-multi-select vcsSelect" classNamePrefix="select" components={animatedComponents}
+            onChange={onVCSInputChange} placeholder="Select version control systems..." value={vcsSelection}
+          />
+          <span id="githubFormItems">
+            <h3>GitHub</h3>
             <input ref={inputRef} placeholder="GitHub Username" onChange={(e) => setUsername(e.target.value)}
-                   value={username} id="username" autoCorrect="off" autoCapitalize="none" autoFocus
-            />
-          <h3>Bitbucket</h3>
-          <input ref={inputRef} placeholder="Bitbucket Username" onChange={(e) => setBitbucketUsername(e.target.value)}
-                 value={bitbucketUsername} id="bitbucketUsername" autoComplete="false" autoCorrect="off" autoCapitalize="none"
-          />
-          <input ref={inputRef} placeholder="Bitbucket App Password" onChange={(e) => setBitbucketAppPassword(e.target.value)}
-                 value={bitbucketAppPassword} id="bitbucketAppPassword" autoCorrect="off" autoCapitalize="none"
-          />
-          <input ref={inputRef} placeholder="Bitbucket Workspace" onChange={(e) => setBitbucketWorkspace(e.target.value)}
-                 value={bitbucketWorkspace} id="bitbucketWorkspace" autoCorrect="off" autoCapitalize="none"
-          />
+                   value={username} id="username" autoCorrect="off" autoCapitalize="none" autoFocus autoComplete="false" />
+          </span>
+
+          <span id="bitbucketFormItems">
+            <h3>Bitbucket</h3>
+            <input title="Bitbucket Username" ref={inputRef} placeholder="Bitbucket Username" onChange={(e) => setBitbucketUsername(e.target.value)}
+                   value={bitbucketUsername} id="bitbucketUsername" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+            <input title="Bitbucket App Password" ref={inputRef} placeholder="Bitbucket App Password" onChange={(e) => setBitbucketAppPassword(e.target.value)}
+                   value={bitbucketAppPassword} type="password" id="bitbucketAppPassword" autoCorrect="off" autoCapitalize="none" />
+            <input title="Bitbucket Workspace" ref={inputRef} placeholder="Bitbucket Workspace" onChange={(e) => setBitbucketWorkspace(e.target.value)}
+                   value={bitbucketWorkspace} id="bitbucketWorkspace" autoCorrect="off" autoCapitalize="none" />
+            <MuiChipsInput title="Bitbucket Repo Names" color="primary" placeholder="Type and enter your Bitbucket repository names" fullWidth
+                           variant="filled" value={bitbucketRepoChips} onChange={handleBitbucketChipChange} />
+          </span>
+
           <button type="submit" disabled={username.length <= 0 || loading}>
           <span role="img" aria-label="Stars">
             ✨
@@ -206,7 +214,7 @@ const App = () => {
     )
   }
 
-  const _renderVCSSelect = () => {
+  const _renderVCSLogos = () => {
     return (
       <div className="App-buttons">
         <TbBrandGithub size={18} />GitHub |
@@ -244,23 +252,8 @@ const App = () => {
           <h1>Combined VCS Contributions Chart Generator</h1>
           <h4>All your contributions in one image!</h4>
         </div>
-        {_renderVCSSelect()}
-        <Select
-          instanceId="eaa53c4b-392e-402e-a779-57636ddc5db3"
-          isMulti
-          name="colors"
-          options={options}
-          className="basic-multi-select"
-          classNamePrefix="select"
-          components={animatedComponents}
-          // onInputChange={}
-          onChange={onVCSInputChange}
-          placeholder="Select version control system..."
-        />
+        {_renderVCSLogos()}
         {_renderForm()}
-
-
-
         <ThemeSelector
           currentTheme={theme}
           onChangeTheme={(themeName) => setTheme(themeName)}
