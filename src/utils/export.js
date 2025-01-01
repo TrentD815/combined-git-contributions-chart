@@ -5,6 +5,12 @@ const API_URL = "/api/v1/"
 export function fetchData(username) {
   return fetch(API_URL + username).then((res) => res.json())
 }
+export function fetchBitbucketData(body) {
+  return fetch(API_URL + 'bitbucket_commits', {
+    method: 'POST',
+    body: JSON.stringify({ body })
+  }).then((res) => res.json())
+}
 
 export function download(canvas) {
   try {

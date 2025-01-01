@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react"
 import { TbShare, TbDownload, TbCopy, TbBrandGithub, TbBrandBitbucket, TbBrandGitlab } from "react-icons/tb"
-import { download, fetchData, downloadJSON, cleanUsername, share, copyToClipboard } from "../utils/export"
+import { download, fetchData, downloadJSON, cleanUsername, share, copyToClipboard, fetchBitbucketData } from "../utils/export";
 import ThemeSelector from "../components/themes"
 import makeAnimated from 'react-select/animated'
 import Select from 'react-select'
@@ -13,6 +13,7 @@ const App = () => {
   const [loading, setLoading] = useState(false)
   const [username, setUsername] = useState("")
   const [bitbucketUsername, setBitbucketUsername] = useState("")
+  const [bitbucketDisplayName, setBitbucketDisplayName] = useState("")
   const [bitbucketAppPassword, setBitbucketAppPassword] = useState("")
   const [bitbucketWorkspace, setBitbucketWorkspace] = useState("")
   const [bitbucketRepoChips, setBitbucketRepoChips] = React.useState([])
@@ -35,24 +36,40 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log("Bitbucket form items",{
+    const body = {
       vcsSelection,
       bitbucketUsername,
+      bitbucketDisplayName,
       bitbucketAppPassword,
       bitbucketWorkspace,
       bitbucketRepoChips
-    })
+    }
     setUsername(cleanUsername(username))
     setLoading(true)
     setError(null)
     setData(null)
 
-    fetchData(cleanUsername(username))
+
+    // fetchData(cleanUsername(username))
+    //   .then((data) => {
+    //     setLoading(false)
+    //
+    //     if (data.years.length === 0) {
+    //       setError("Could not find GitHub your profile")
+    //     } else {
+    //       setData(data)
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err)
+    //     setLoading(false)
+    //     setError("Unable to fetch check Github profile successfully...")
+    //   })
+    fetchBitbucketData(body)
       .then((data) => {
         setLoading(false)
-
         if (data.years.length === 0) {
-          setError("Could not find GitHub your profile")
+          setError("Could not find your Bitbucket commits")
         } else {
           setData(data)
         }
@@ -60,7 +77,7 @@ const App = () => {
       .catch((err) => {
         console.log(err)
         setLoading(false)
-        setError("Unable to fetch check Github profile successfully...")
+        setError("Unable to fetch Bitbucket profile successfully...")
       })
   }
 
@@ -196,6 +213,8 @@ const App = () => {
             <h3>Bitbucket</h3>
             <input title="Bitbucket Username" ref={inputRef} placeholder="Bitbucket Username" onChange={(e) => setBitbucketUsername(e.target.value)}
                    value={bitbucketUsername} id="bitbucketUsername" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+            <input title="Bitbucket Display Name" ref={inputRef} placeholder="Bitbucket Display Name" onChange={(e) => setBitbucketDisplayName(e.target.value)}
+                   value={bitbucketDisplayName} id="bitbucketDisplayName" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
             <input title="Bitbucket App Password" ref={inputRef} placeholder="Bitbucket App Password" onChange={(e) => setBitbucketAppPassword(e.target.value)}
                    value={bitbucketAppPassword} type="password" id="bitbucketAppPassword" autoCorrect="off" autoCapitalize="none" />
             <input title="Bitbucket Workspace" ref={inputRef} placeholder="Bitbucket Workspace" onChange={(e) => setBitbucketWorkspace(e.target.value)}

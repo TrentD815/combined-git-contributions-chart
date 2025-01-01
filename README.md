@@ -3,7 +3,7 @@ Generate an image for all contributions across various version control systems s
 GitHub, Bitbucket, Gitlab, Azure DevOps, and AWS Code Commit
 
 ## Motivation and Reasoning
-I've been unable to find a straightforward service which can show you a combined contributions graph
+I haven't found a web app service which can show you a combined contributions graph
 across multiple VCS services such as Bitbucket + GitHub + Gitlab all in one. I've seen 
 Python/CLI services such as [this](https://github.com/YakinRubaiat/GitGraph) but these require the repos to be local which 
 in my opinion defeats the purpose a bit. I've also seen projects which create a "shadow" repo on your GitHub such as 
@@ -29,24 +29,25 @@ Main downsides:
 - More info is required to pull all your contributions (as opposed to just needing your GitHub username previously) 
 - It's not persistent since it's just a one time generator like the original project this was forked from
 
-
-
 ## Requirements
 ### For GitHub
 - A valid GitHub account.
 - Open activity in setting (`Settings` > `Public profile` > `Contributions & Activity`).
-  - [ ] Make profile private and hide activity
+  - `Make profile private and hide activity` should be unchecked
   
 ### For Bitbucket
 - A valid Bitbucket account
-- Your username and a pre-generated app password with the correct permissions
-- The name of your project and the name of your repo slug(s)
+- Your username (for authentication)
+- Your display name (for filtering commits)
+- A pre-generated app password with the correct permissions. See [this](https://support.atlassian.com/bitbucket-cloud/docs/create-an-app-password/) link for how to create an app password
+  - Note: The app password must have `REPO_READ` permission for the specified repositories
+- The name of your workspace and repository names
 
 ### Future Integrations: 
 - Gitlab, AWS Code Commit, & Azure DevOps
 
 ## Install and run locally
-- Install the packages using [NPM](https://nodejs.org/en/):
+- Install the packages using NPM:
 ```$ npm install```
 - Then run locally using:
 ```$ npm run dev```
