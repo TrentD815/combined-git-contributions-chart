@@ -1,6 +1,9 @@
 import React, { useRef, useState, useEffect } from "react"
 import { TbShare, TbDownload, TbCopy, TbBrandGithub, TbBrandBitbucket, TbBrandGitlab } from "react-icons/tb"
-import { download, fetchData, downloadJSON, cleanUsername, share, copyToClipboard, fetchBitbucketData } from "../utils/export";
+import {
+  download, fetchData, downloadJSON, cleanUsername, share,
+  copyToClipboard, fetchBitbucketData, fetchGitlabtData, fetchGitlabData
+} from "../utils/export";
 import ThemeSelector from "../components/themes"
 import makeAnimated from 'react-select/animated'
 import Select from 'react-select'
@@ -11,18 +14,27 @@ const App = () => {
   const canvasRef = useRef()
   const contentRef = useRef()
   const [loading, setLoading] = useState(false)
+  const [theme, setTheme] = useState("standard")
+  const [data, setData] = useState(null)
+  const [error, setError] = useState(null)
+  // GitHub
   const [username, setUsername] = useState("")
+  const [showGitHubForm, setShowGithubForm] = useState(false)
+  // Bitbucket
   const [bitbucketUsername, setBitbucketUsername] = useState("")
   const [bitbucketDisplayName, setBitbucketDisplayName] = useState("")
   const [bitbucketAppPassword, setBitbucketAppPassword] = useState("")
   const [bitbucketWorkspace, setBitbucketWorkspace] = useState("")
   const [bitbucketRepoChips, setBitbucketRepoChips] = React.useState([])
-  const [vcsSelection, setVcsSelection] = React.useState([])
-  const [theme, setTheme] = useState("standard")
-  const [data, setData] = useState(null)
-  const [error, setError] = useState(null)
+  const [showBitbucketForm, setShowBitbucketForm] = useState(false)
+  // Gitlab
+  const [gitlabDisplayName, setGitlabDisplayName] = useState("")
+  const [gitlabAccessToken, setGitlabAccessToken] = useState("")
+  const [gitlabProjectId, setGitlabProjectId] = useState("")
+  const [showGitlabForm, setShowGitlabForm] = useState(false)
+  //VCS
   const animatedComponents = makeAnimated();
-
+  const [vcsSelection, setVcsSelection] = React.useState([])
   const options = [
     { value: 'GitHub', label: 'GitHub' },
     { value: 'Bitbucket', label: 'Bitbucket' },
@@ -36,7 +48,7 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const body = {
+    const bitbucketBody = {
       vcsSelection,
       bitbucketUsername,
       bitbucketDisplayName,
@@ -44,41 +56,49 @@ const App = () => {
       bitbucketWorkspace,
       bitbucketRepoChips
     }
+    const gitlabBody = {
+      vcsSelection,
+      gitlabDisplayName,
+      gitlabAccessToken,
+      gitlabProjectId
+    }
+
     setUsername(cleanUsername(username))
     setLoading(true)
     setError(null)
     setData(null)
 
-
-    // fetchData(cleanUsername(username))
-    //   .then((data) => {
-    //     setLoading(false)
-    //
-    //     if (data.years.length === 0) {
-    //       setError("Could not find GitHub your profile")
-    //     } else {
-    //       setData(data)
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log(err)
-    //     setLoading(false)
-    //     setError("Unable to fetch check Github profile successfully...")
-    //   })
-    fetchBitbucketData(body)
+    fetchData(cleanUsername(username))
       .then((data) => {
         setLoading(false)
-        if (data.years.length === 0) {
-          setError("Could not find your Bitbucket commits")
-        } else {
-          setData(data)
-        }
+        data.years.length === 0  ? setError("Could not find GitHub your profile") : setData(data)
       })
       .catch((err) => {
         console.log(err)
         setLoading(false)
-        setError("Unable to fetch Bitbucket profile successfully...")
+        setError("Unable to fetch check Github profile successfully...")
       })
+
+    // fetchBitbucketData(bitbucketBody)
+    //   .then((data) => {
+    //     setLoading(false)
+    //     data.years.length === 0 ? setError("Could not find your Bitbucket commits") : setData(data)
+    //   })
+    //   .catch((err) => {
+    //     console.log(err)
+    //     setLoading(false)
+    //     setError("Unable to fetch Bitbucket profile successfully...")
+    //   })
+    // fetchGitlabData(gitlabBody)
+    //   .then((data) => {
+    //     setLoading(false)
+    //     data.years.length === 0 ? setError("Could not find your Gitlab commits") : setData(data)
+    //   })
+    //   .catch((err) => {
+    //     console.log(err)
+    //     setLoading(false)
+    //     setError("Unable to fetch Gitlab profile successfully...")
+    //   })
   }
 
   const onBitbucketSelect = () => {
@@ -201,16 +221,16 @@ const App = () => {
           <Select
             instanceId="eaa53c4b-392e-402e-a779-57636ddc5db3" isMulti options={options}
             className="basic-multi-select vcsSelect" classNamePrefix="select" components={animatedComponents}
-            onChange={onVCSInputChange} placeholder="Select version control systems..." value={vcsSelection}
+            onChange={onVCSInputChange} placeholder="Select your version control systems..." value={vcsSelection}
           />
           <span id="githubFormItems">
-            <h3>GitHub</h3>
+            <h3>GitHub <TbBrandGithub size={18} /> </h3>
             <input ref={inputRef} placeholder="GitHub Username" onChange={(e) => setUsername(e.target.value)}
                    value={username} id="username" autoCorrect="off" autoCapitalize="none" autoFocus autoComplete="false" />
           </span>
 
           <span id="bitbucketFormItems">
-            <h3>Bitbucket</h3>
+            <h3>Bitbucket <TbBrandBitbucket size={18} /> </h3>
             <input title="Bitbucket Username" ref={inputRef} placeholder="Bitbucket Username" onChange={(e) => setBitbucketUsername(e.target.value)}
                    value={bitbucketUsername} id="bitbucketUsername" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
             <input title="Bitbucket Display Name" ref={inputRef} placeholder="Bitbucket Display Name" onChange={(e) => setBitbucketDisplayName(e.target.value)}
@@ -220,10 +240,23 @@ const App = () => {
             <input title="Bitbucket Workspace" ref={inputRef} placeholder="Bitbucket Workspace" onChange={(e) => setBitbucketWorkspace(e.target.value)}
                    value={bitbucketWorkspace} id="bitbucketWorkspace" autoCorrect="off" autoCapitalize="none" />
             <MuiChipsInput title="Bitbucket Repo Names" color="primary" placeholder="Type and enter your Bitbucket repository names" fullWidth
-                           variant="filled" value={bitbucketRepoChips} onChange={handleBitbucketChipChange} />
+                           variant="filled" id="bitbucketRepoChips" value={bitbucketRepoChips} onChange={handleBitbucketChipChange} />
           </span>
 
-          <button type="submit" disabled={username.length <= 0 || loading}>
+          <span id="gitlabFormItems">
+            <h3>Gitlab <TbBrandGitlab size={18} /></h3>
+            <input title="Gitlab Display Name" ref={inputRef} placeholder="Gitlab Display Name" onChange={(e) => setGitlabDisplayName(e.target.value)}
+                   value={gitlabDisplayName} id="gitlabDisplayName" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+            <input title="Gitlab Access Token" ref={inputRef} placeholder="Gitlab Access Token" onChange={(e) => setGitlabAccessToken(e.target.value)}
+                   value={gitlabAccessToken} id="gitlabAccessToken" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+            <input title="Gitlab Project Id" ref={inputRef} placeholder="Gitlab Project Id" onChange={(e) => setGitlabProjectId(e.target.value)}
+                   value={gitlabProjectId} id="gitlabProjectId" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+          </span>
+
+          <button type="submit" disabled={
+            username.length <= 0 || bitbucketUsername.length <= 0 || bitbucketDisplayName.length <= 0
+            || bitbucketWorkspace.length <= 0 || bitbucketAppPassword.length <= 0 || bitbucketRepoChips.length <= 0
+            || vcsSelection.length <= 0 || loading}>
           <span role="img" aria-label="Stars">
             ✨
           </span>{" "}
@@ -236,9 +269,7 @@ const App = () => {
   const _renderVCSLogos = () => {
     return (
       <div className="App-buttons">
-        <TbBrandGithub size={18} />GitHub |
-        <TbBrandBitbucket size={18} />Bitbucket |
-        <TbBrandGitlab size={18} />Gitlab
+        GitHub | Bitbucket | Gitlab
       </div>
     )
   }
