@@ -1,16 +1,16 @@
 export default async (req, res) => {
-  let bitbucket = JSON.parse(req.body)
-  bitbucket = bitbucket.body
-  const username = bitbucket.bitbucketUsername
-  const appPassword = bitbucket.bitbucketAppPassword
-  const workspace = bitbucket.bitbucketWorkspace
-  const repos = bitbucket.bitbucketRepoChips || []
-  const displayName = bitbucket.bitbucketDisplayName
-  const commitsByUser = []
-
   try {
+    let bitbucket = JSON.parse(req.body)
+    bitbucket = bitbucket.body
+    const username = bitbucket.bitbucketUsername
+    const appPassword = bitbucket.bitbucketAppPassword
+    const workspace = bitbucket.bitbucketWorkspace
+    const repos = bitbucket.bitbucketRepoChips || []
+    const displayName = bitbucket.bitbucketDisplayName
+    const commitsByUser = []
     const repoCount = repos.length
     let totalCommitCount = 0
+
     for (const [i, repo] of repos.entries()) {
       let currentRepoCommitCount = 0
       let nextUrl = `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo}/commits`

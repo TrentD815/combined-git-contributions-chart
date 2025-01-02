@@ -3,10 +3,16 @@ import { toast } from "react-hot-toast"
 const API_URL = "/api/v1/"
 
 export function fetchData(username) {
-  return fetch(API_URL + username).then((res) => res.json())
+  return fetch(API_URL + 'github' + `?username=${username}`).then((res) => res.json())
 }
 export function fetchBitbucketData(body) {
-  return fetch(API_URL + 'bitbucket_commits', {
+  return fetch(API_URL + 'bitbucket', {
+    method: 'POST',
+    body: JSON.stringify({ body })
+  }).then((res) => res.json())
+}
+export function fetchGitlabData(body) {
+  return fetch(API_URL + 'gitlab', {
     method: 'POST',
     body: JSON.stringify({ body })
   }).then((res) => res.json())
