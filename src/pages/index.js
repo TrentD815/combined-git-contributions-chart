@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react"
 import { TbShare, TbDownload, TbCopy, TbBrandGithub, TbBrandBitbucket, TbBrandGitlab } from "react-icons/tb"
 import {
-  download, fetchData, downloadJSON, cleanUsername, share,
-  copyToClipboard, fetchBitbucketData, fetchGitlabtData, fetchGitlabData
+  download, fetchGithubData, downloadJSON, cleanUsername, share,
+  copyToClipboard, fetchBitbucketData, fetchGitlabData
 } from "../utils/export";
 import ThemeSelector from "../components/themes"
 import makeAnimated from 'react-select/animated'
@@ -68,27 +68,27 @@ const App = () => {
     setError(null)
     setData(null)
 
-    fetchData(cleanUsername(username))
-      .then((data) => {
-        setLoading(false)
-        data.years.length === 0  ? setError("Could not find GitHub your profile") : setData(data)
-      })
-      .catch((err) => {
-        console.log(err)
-        setLoading(false)
-        setError("Unable to fetch check Github profile successfully...")
-      })
-
-    // fetchBitbucketData(bitbucketBody)
+    // fetchGithubData(cleanUsername(username))
     //   .then((data) => {
     //     setLoading(false)
-    //     data.years.length === 0 ? setError("Could not find your Bitbucket commits") : setData(data)
+    //     data.years.length === 0  ? setError("Could not find GitHub your profile") : setData(data)
     //   })
     //   .catch((err) => {
     //     console.log(err)
     //     setLoading(false)
-    //     setError("Unable to fetch Bitbucket profile successfully...")
+    //     setError("Unable to fetch check Github profile successfully...")
     //   })
+
+    fetchBitbucketData(bitbucketBody)
+      .then((data) => {
+        setLoading(false)
+        data.years.length === 0 ? setError("Could not find your Bitbucket commits") : setData(data)
+      })
+      .catch((err) => {
+        console.log(err)
+        setLoading(false)
+        setError("Unable to fetch Bitbucket profile successfully...")
+      })
     // fetchGitlabData(gitlabBody)
     //   .then((data) => {
     //     setLoading(false)
