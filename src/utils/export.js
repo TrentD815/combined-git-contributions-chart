@@ -1,24 +1,25 @@
 import { toast } from "react-hot-toast"
-
 const API_URL = "/api/v1/"
 
-export function fetchData(username) {
+function fetchGithubData(username) {
   return fetch(API_URL + 'github' + `?username=${username}`).then((res) => res.json())
 }
-export function fetchBitbucketData(body) {
+
+function fetchBitbucketData(body) {
   return fetch(API_URL + 'bitbucket', {
     method: 'POST',
     body: JSON.stringify({ body })
   }).then((res) => res.json())
 }
-export function fetchGitlabData(body) {
+
+function fetchGitlabData(body) {
   return fetch(API_URL + 'gitlab', {
     method: 'POST',
     body: JSON.stringify({ body })
   }).then((res) => res.json())
 }
 
-export function download(canvas) {
+function download(canvas) {
   try {
     const dataUrl = canvas.toDataURL()
     const a = document.createElement("a")
@@ -32,7 +33,7 @@ export function download(canvas) {
   }
 }
 
-export function downloadJSON(data) {
+function downloadJSON(data) {
   try {
     const dataString = JSON.stringify(data)
     const dataUrl =
@@ -48,29 +49,27 @@ export function downloadJSON(data) {
   }
 }
 
-export async function share(canvas) {
+async function share(canvas) {
   try {
     canvas.toBlob(async (blob) => {
       navigator
         .share({
           title: "Combined Git Contributions",
-          text: "Check out my version control contribution history over time. A free tool by @TrentD815",
+          text: "Check out my combined VCS contributions over time!",
           files: [
             new File([blob], "contributions.png", {
               type: blob.type
             })
           ]
         })
-        .catch(() => {
-          // do nothing
-        })
+        .catch(() => {})
     }, "image/png")
   } catch (err) {
     console.error(err)
   }
 }
 
-export async function copyToClipboard(canvas) {
+async function copyToClipboard(canvas) {
   if ("ClipboardItem" in window) {
     const item = new ClipboardItem({
       "image/png": new Promise((resolve) => {
@@ -90,6 +89,17 @@ export async function copyToClipboard(canvas) {
   }
 }
 
-export function cleanUsername(username) {
+function cleanUsername(username) {
   return username.replace(/^(http|https):\/\/(?!www\.)github\.com\//, "")
+}
+
+module.exports = {
+  fetchGithubData,
+  fetchBitbucketData,
+  fetchGitlabData,
+  download,
+  share,
+  downloadJSON,
+  copyToClipboard,
+  cleanUsername
 }

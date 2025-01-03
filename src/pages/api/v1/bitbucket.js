@@ -1,3 +1,5 @@
+import { summarizeContributions, combineDuplicates } from "../../../utils/api/general";
+
 export default async (req, res) => {
   try {
     let bitbucket = JSON.parse(req.body)
@@ -7,7 +9,7 @@ export default async (req, res) => {
     const workspace = bitbucket.bitbucketWorkspace
     const repos = bitbucket.bitbucketRepoChips || []
     const displayName = bitbucket.bitbucketDisplayName
-    const commitsByUser = []
+    let commitsByUser = []
     const repoCount = repos.length
     let totalCommitCount = 0
 
@@ -36,7 +38,12 @@ export default async (req, res) => {
           const user = author.user
 
           if (user?.display_name === displayName) {
-            commitsByUser.push(commit.date)
+            commit.date = commit.date.split("T")[0]
+            const contribution = {
+              date: commit.date,
+              intensity: 1
+            }
+            commitsByUser.push(contribution)
           }
         }
         // Update nextUrl for pagination
@@ -45,7 +52,9 @@ export default async (req, res) => {
         totalCommitCount += data.values.length
       }
     }
-    return res.status(200).json({ message: "Bitbucket commits retrieved successfully", commits: commitsByUser })
+    const years = summarizeContributions(commitsByUser)
+    commitsByUser = combineDuplicates(commitsByUser)
+    return res.status(200).json({ message: "Bitbucket commits retrieved successfully", years: years, contributions: commitsByUser })
   } catch (error) {
     console.error("Error fetching commits:", error.message)
     return res.status(500).json({ message: "Unable to get Bitbucket commits", error: error.message })
