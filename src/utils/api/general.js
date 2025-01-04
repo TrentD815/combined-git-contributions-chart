@@ -32,7 +32,29 @@ const combineDuplicates = (data) => {
   return Object.values(combined);
 }
 
+// Combine years across different VCS
+const combineYears = (years) => {
+  const combined = {};
+  years.forEach(item => {
+    const { year, total } = item
+    if (combined[year]) {
+      combined[year].total += total
+    } else {
+      combined[year] = {
+        year,
+        total,
+        range: {
+          start: `${year}-01-01`,
+          end: `${year}-12-31`
+        }
+      }
+    }
+  })
+  return Object.values(combined).sort((a, b) => b.year - a.year)
+}
+
 module.exports = {
   summarizeContributions,
-  combineDuplicates
+  combineDuplicates,
+  combineYears
 }
