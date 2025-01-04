@@ -2,7 +2,7 @@ import { toast } from "react-hot-toast"
 const API_URL = "/api/v1/"
 
 function fetchGithubData(username) {
-  return fetch(API_URL + 'github' + `?username=${username}`).then((res) => res.json())
+  return fetch(API_URL + `github?username=${username}`).then((res) => res.json())
 }
 
 function fetchBitbucketData(body) {
@@ -89,9 +89,6 @@ async function copyToClipboard(canvas) {
   }
 }
 
-function cleanUsername(username) {
-  return username.replace(/^(http|https):\/\/(?!www\.)github\.com\//, "")
-}
 
 module.exports = {
   fetchGithubData,
@@ -101,5 +98,4 @@ module.exports = {
   share,
   downloadJSON,
   copyToClipboard,
-  cleanUsername
 }

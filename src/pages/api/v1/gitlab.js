@@ -1,5 +1,6 @@
 export default async (req, res) => {
   try {
+    return res.status(200).json({ message: "Gitlab commits retrieved successfully"})
     let gitlab = JSON.parse(req.body)
     gitlab = gitlab.body
     console.log(gitlab)

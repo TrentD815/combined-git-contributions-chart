@@ -1,13 +1,14 @@
 import React, { useRef, useState, useEffect } from "react"
 import { TbShare, TbDownload, TbCopy, TbBrandGithub, TbBrandBitbucket, TbBrandGitlab } from "react-icons/tb"
 import {
-  download, fetchGithubData, downloadJSON, cleanUsername, share,
+  download, fetchGithubData, downloadJSON, share,
   copyToClipboard, fetchBitbucketData, fetchGitlabData
 } from "../utils/export";
 import ThemeSelector from "../components/themes"
 import makeAnimated from 'react-select/animated'
 import Select from 'react-select'
 import { MuiChipsInput } from "mui-chips-input"
+import { combineYears } from "../utils/api/general";
 
 const App = () => {
   const inputRef = useRef()
@@ -48,69 +49,51 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const bitbucketBody = {
-      vcsSelection,
-      bitbucketUsername,
-      bitbucketDisplayName,
-      bitbucketAppPassword,
-      bitbucketWorkspace,
-      bitbucketRepoChips
-    }
-    const gitlabBody = {
-      vcsSelection,
-      gitlabDisplayName,
-      gitlabAccessToken,
-      gitlabProjectId
-    }
-
-    setUsername(cleanUsername(username))
     setLoading(true)
     setError(null)
     setData(null)
+    setUsername(username)
+    const bitbucketBody = { bitbucketUsername, bitbucketDisplayName, bitbucketAppPassword, bitbucketWorkspace, bitbucketRepoChips }
+    const gitlabBody = { gitlabDisplayName, gitlabAccessToken, gitlabProjectId }
 
-    // fetchGithubData(cleanUsername(username))
-    //   .then((data) => {
-    //     setLoading(false)
-    //     data.years.length === 0  ? setError("Could not find GitHub your profile") : setData(data)
-    //   })
-    //   .catch((err) => {
-    //     console.log(err)
-    //     setLoading(false)
-    //     setError("Unable to fetch check Github profile successfully...")
-    //   })
+    let currentVCS = []
+    for (const vcs of vcsSelection) {
+      switch (vcs.value) {
+        case 'GitHub':
+          const githubPromise = fetchGithubData(username)
+          currentVCS.push(githubPromise)
+          break
+        case 'Bitbucket':
+          const bitbucketPromise = fetchBitbucketData(bitbucketBody)
+          currentVCS.push(bitbucketPromise)
+          break
+        case 'Gitlab':
+          const gitlabPromise = fetchGitlabData(gitlabBody)
+          currentVCS.push(gitlabPromise)
+          break
+        default:
+          console.log("Unknown VCS")
+      }
+    }
 
-    fetchBitbucketData(bitbucketBody)
-      .then((data) => {
-        setLoading(false)
-        data.years.length === 0 ? setError("Could not find your Bitbucket commits") : setData(data)
+    Promise.all(currentVCS)
+      .then(([bitbucketData, gitlabData, githubData]) => {
+        let combinedYears = [...bitbucketData.years, ...githubData.years]
+        combinedYears = combineYears(combinedYears)
+        let combinedContributions = [...bitbucketData.contributions, ...githubData.contributions]
+        const combinedData = { years: combinedYears, contributions: combinedContributions }
+
+        !bitbucketData.years.length && !gitlabData.years.length && !githubData.years.length
+          ? setError("Could not find any commits in your profiles")
+          : setData(combinedData)
+
+        setLoading(false);
       })
       .catch((err) => {
-        console.log(err)
+        console.error(err)
         setLoading(false)
-        setError("Unable to fetch Bitbucket profile successfully...")
+        setError("Unable to fetch profile data successfully...")
       })
-    // fetchGitlabData(gitlabBody)
-    //   .then((data) => {
-    //     setLoading(false)
-    //     data.years.length === 0 ? setError("Could not find your Gitlab commits") : setData(data)
-    //   })
-    //   .catch((err) => {
-    //     console.log(err)
-    //     setLoading(false)
-    //     setError("Unable to fetch Gitlab profile successfully...")
-    //   })
-  }
-
-  const onBitbucketSelect = () => {
-    alert("Bitbucket selected")
-  }
-
-  const onGithubSelect = () => {
-    alert("Github selected")
-  }
-
-  const onGitlabSelect = () => {
-    alert("Gitlab selected")
   }
 
   const handleBitbucketChipChange = (chips) => {
@@ -138,6 +121,7 @@ const App = () => {
     e.preventDefault()
     share(canvasRef.current)
   }
+
   const onVCSInputChange = (inputValue, { action, prevInputValue }) => {
     if (action === 'select-option' || action === "remove-value" || action === "clear") {
       setVcsSelection(inputValue)
@@ -151,7 +135,6 @@ const App = () => {
     }
 
     const { drawContributions } = await import("github-contributions-canvas")
-
     drawContributions(canvasRef.current, {
       data,
       username: username,
