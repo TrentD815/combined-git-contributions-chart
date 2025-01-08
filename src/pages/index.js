@@ -35,7 +35,7 @@ const App = () => {
   const [showGitlabForm, setShowGitlabForm] = useState(false)
   //VCS
   const animatedComponents = makeAnimated();
-  const [vcsSelection, setVcsSelection] = React.useState([])
+  const [vcsSelection, setVcsSelection] = useState([])
   const options = [
     { value: 'GitHub', label: 'GitHub' },
     { value: 'Bitbucket', label: 'Bitbucket' },
@@ -125,6 +125,9 @@ const App = () => {
   const onVCSInputChange = (inputValue, { action, prevInputValue }) => {
     if (action === 'select-option' || action === "remove-value" || action === "clear") {
       setVcsSelection(inputValue)
+      inputValue.some(item => item.value === "GitHub") ? setShowGithubForm(true) : setShowGithubForm(false)
+      inputValue.some(item => item.value === "Bitbucket") ? setShowBitbucketForm(true) : setShowBitbucketForm(false)
+      inputValue.some(item => item.value === "Gitlab") ? setShowGitlabForm(true) : setShowGitlabForm(false)
     }
   }
 
@@ -206,46 +209,80 @@ const App = () => {
             className="basic-multi-select vcsSelect" classNamePrefix="select" components={animatedComponents}
             onChange={onVCSInputChange} placeholder="Select your version control systems..." value={vcsSelection}
           />
-          <span id="githubFormItems">
-            <h3>GitHub <TbBrandGithub size={18} /> </h3>
-            <input ref={inputRef} placeholder="GitHub Username" onChange={(e) => setUsername(e.target.value)}
-                   value={username} id="username" autoCorrect="off" autoCapitalize="none" autoFocus autoComplete="false" />
-          </span>
 
-          <span id="bitbucketFormItems">
-            <h3>Bitbucket <TbBrandBitbucket size={18} /> </h3>
-            <input title="Bitbucket Username" ref={inputRef} placeholder="Bitbucket Username" onChange={(e) => setBitbucketUsername(e.target.value)}
-                   value={bitbucketUsername} id="bitbucketUsername" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
-            <input title="Bitbucket Display Name" ref={inputRef} placeholder="Bitbucket Display Name" onChange={(e) => setBitbucketDisplayName(e.target.value)}
-                   value={bitbucketDisplayName} id="bitbucketDisplayName" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
-            <input title="Bitbucket App Password" ref={inputRef} placeholder="Bitbucket App Password" onChange={(e) => setBitbucketAppPassword(e.target.value)}
-                   value={bitbucketAppPassword} type="password" id="bitbucketAppPassword" autoCorrect="off" autoCapitalize="none" />
-            <input title="Bitbucket Workspace" ref={inputRef} placeholder="Bitbucket Workspace" onChange={(e) => setBitbucketWorkspace(e.target.value)}
-                   value={bitbucketWorkspace} id="bitbucketWorkspace" autoCorrect="off" autoCapitalize="none" />
-            <MuiChipsInput title="Bitbucket Repo Names" color="primary" placeholder="Type and enter your Bitbucket repository names" fullWidth
-                           variant="filled" id="bitbucketRepoChips" value={bitbucketRepoChips} onChange={handleBitbucketChipChange} />
-          </span>
-
-          <span id="gitlabFormItems">
-            <h3>Gitlab <TbBrandGitlab size={18} /></h3>
-            <input title="Gitlab Display Name" ref={inputRef} placeholder="Gitlab Display Name" onChange={(e) => setGitlabDisplayName(e.target.value)}
-                   value={gitlabDisplayName} id="gitlabDisplayName" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
-            <input title="Gitlab Access Token" ref={inputRef} placeholder="Gitlab Access Token" onChange={(e) => setGitlabAccessToken(e.target.value)}
-                   value={gitlabAccessToken} id="gitlabAccessToken" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
-            <input title="Gitlab Project Id" ref={inputRef} placeholder="Gitlab Project Id" onChange={(e) => setGitlabProjectId(e.target.value)}
-                   value={gitlabProjectId} id="gitlabProjectId" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
-          </span>
+          { showGitHubForm ? githubFormItems() : null }
+          { showBitbucketForm ? bitbucketFormItems(): null }
+          { showGitlabForm ? gitlabFormItems(): null }
 
           <button type="submit" disabled={
-            username.length <= 0 || bitbucketUsername.length <= 0 || bitbucketDisplayName.length <= 0
-            || bitbucketWorkspace.length <= 0 || bitbucketAppPassword.length <= 0 || bitbucketRepoChips.length <= 0
-            || vcsSelection.length <= 0 || loading}>
+            vcsSelection.length <= 0 ||
+            loading ||
+            githubFormNotComplete() ||
+            bitbucketFormNotComplete() ||
+            gitlabFormNotComplete()
+          }>
           <span role="img" aria-label="Stars">
             ✨
           </span>{" "}
             {loading ? "Generating..." : "Generate!"}
           </button>
         </form>
+    )
+  }
+
+  const githubFormNotComplete = () => {
+    return showGitHubForm && username.length <= 0
+  }
+
+  const bitbucketFormNotComplete = () => {
+    return showBitbucketForm &&
+      (bitbucketUsername.length <= 0 || bitbucketDisplayName.length <= 0 || bitbucketWorkspace.length <= 0
+        || bitbucketAppPassword.length <= 0 || bitbucketRepoChips.length <= 0)
+  }
+
+  const gitlabFormNotComplete = () => {
+    return showGitlabForm && (gitlabProjectId.length <= 0 || gitlabDisplayName.length <=0 || gitlabAccessToken.length <= 0)
+  }
+
+  const githubFormItems = () => {
+    return (
+      <>
+        <h3>GitHub <TbBrandGithub size={18} /> </h3>
+        <input ref={inputRef} placeholder="GitHub Username" onChange={(e) => setUsername(e.target.value)}
+               value={username} id="username" autoCorrect="off" autoCapitalize="none" autoFocus autoComplete="false" />
+      </>
+    )
+  }
+
+  const bitbucketFormItems = () => {
+    return (
+      <>
+        <h3>Bitbucket <TbBrandBitbucket size={18} /> </h3>
+        <input title="Bitbucket Username" ref={inputRef} placeholder="Bitbucket Username" onChange={(e) => setBitbucketUsername(e.target.value)}
+               value={bitbucketUsername} id="bitbucketUsername" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+        <input title="Bitbucket Display Name" ref={inputRef} placeholder="Bitbucket Display Name" onChange={(e) => setBitbucketDisplayName(e.target.value)}
+               value={bitbucketDisplayName} id="bitbucketDisplayName" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+        <input title="Bitbucket App Password" ref={inputRef} placeholder="Bitbucket App Password" onChange={(e) => setBitbucketAppPassword(e.target.value)}
+               value={bitbucketAppPassword} type="password" id="bitbucketAppPassword" autoCorrect="off" autoCapitalize="none" />
+        <input title="Bitbucket Workspace" ref={inputRef} placeholder="Bitbucket Workspace" onChange={(e) => setBitbucketWorkspace(e.target.value)}
+               value={bitbucketWorkspace} id="bitbucketWorkspace" autoCorrect="off" autoCapitalize="none" />
+        <MuiChipsInput title="Bitbucket Repo Names" color="primary" placeholder="Type and enter your Bitbucket repository names" fullWidth
+                       variant="filled" id="bitbucketRepoChips" value={bitbucketRepoChips} onChange={handleBitbucketChipChange} />
+      </>
+    )
+  }
+
+  const gitlabFormItems = () => {
+    return (
+      <>
+        <h3>Gitlab <TbBrandGitlab size={18} /></h3>
+        <input title="Gitlab Display Name" ref={inputRef} placeholder="Gitlab Display Name" onChange={(e) => setGitlabDisplayName(e.target.value)}
+               value={gitlabDisplayName} id="gitlabDisplayName" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+        <input title="Gitlab Access Token" ref={inputRef} placeholder="Gitlab Access Token" onChange={(e) => setGitlabAccessToken(e.target.value)}
+               value={gitlabAccessToken} id="gitlabAccessToken" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+        <input title="Gitlab Project Id" ref={inputRef} placeholder="Gitlab Project Id" onChange={(e) => setGitlabProjectId(e.target.value)}
+               value={gitlabProjectId} id="gitlabProjectId" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+      </>
     )
   }
 
