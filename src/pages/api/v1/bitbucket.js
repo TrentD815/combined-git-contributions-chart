@@ -41,7 +41,9 @@ export default async (req, res) => {
             commit.date = commit.date.split("T")[0]
             const contribution = {
               date: commit.date,
-              intensity: 1
+              count: 1,
+              color: "#9be9a8",
+              intensity: '1'
             }
             commitsByUser.push(contribution)
           }

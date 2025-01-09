@@ -1,3 +1,11 @@
+const COLOR_MAP = {
+  0: "#ebedf0",
+  1: "#9be9a8",
+  2: "#40c463",
+  3: "#30a14e",
+  4: "#216e39"
+}
+
 // Match the 'year' parameter seen in fetch.js for the Github API call without any html manipulation
 const summarizeContributions = (contributions) => {
   const years = {}
@@ -19,14 +27,22 @@ const summarizeContributions = (contributions) => {
 const combineDuplicates = (data) => {
   const combined = {}
   data.forEach(item => {
-    const { date, intensity } = item
+    const { date, count, color, intensity } = item
     if (combined[date]) {
-      if (combined[date].intensity < 4) {
+      combined[date].count += 1
+      let temp = parseInt(combined[date].intensity)
+      if (temp < 4) {
         //TODO: Change intensity calculation to be quartiles instead of just +1
-        combined[date].intensity += 1;
+        temp += 1
+        combined[date].intensity = temp.toString()
+        combined[date].color = COLOR_MAP[temp]
+      }
+      else {
+        combined[date].intensity = '4'
+        combined[date].color = COLOR_MAP[4]
       }
     } else {
-      combined[date] = { date, intensity }
+      combined[date] = { date, count, color, intensity }
     }
   })
   return Object.values(combined);
