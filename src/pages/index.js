@@ -77,15 +77,30 @@ const App = () => {
     }
 
     Promise.all(currentVCS)
-      .then(([bitbucketData, gitlabData, githubData]) => {
-        let combinedYears = [...bitbucketData.years, ...githubData.years]
-        combinedYears = combineYears(combinedYears)
-        let combinedContributions = [...bitbucketData.contributions, ...githubData.contributions]
-        const combinedData = { years: combinedYears, contributions: combinedContributions }
+      .then(([githubData, bitbucketData, gitlabData]) => {
+        const combinedYears = []
+        const combinedContributions = []
+        let vcsData = []
+        if (githubData) { vcsData.push(githubData) }
+        if (bitbucketData) { vcsData.push(bitbucketData)}
+        if (gitlabData) { vcsData.push(gitlabData)}
 
-        !bitbucketData.years.length && !gitlabData.years.length && !githubData.years.length
-          ? setError("Could not find any commits in your profiles")
-          : setData(combinedData)
+        vcsData.forEach((data) => {
+          if (data) {
+            combinedYears.push(...data.years)
+            combinedContributions.push(...data.contributions)
+          }
+        })
+
+        const combinedData = {
+          years: combineYears(combinedYears),
+          contributions: combinedContributions
+        }
+        console.log(combinedData)
+        setData(combinedData)
+        // !bitbucketData?.length && !gitlabData?.length && !githubData?.length
+        //   ? setError("Could not find any commits in your profiles")
+        //   : setData(combinedData)
 
         setLoading(false);
       })
@@ -279,7 +294,7 @@ const App = () => {
         <input title="Gitlab Display Name" ref={inputRef} placeholder="Gitlab Display Name" onChange={(e) => setGitlabDisplayName(e.target.value)}
                value={gitlabDisplayName} id="gitlabDisplayName" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
         <input title="Gitlab Access Token" ref={inputRef} placeholder="Gitlab Access Token" onChange={(e) => setGitlabAccessToken(e.target.value)}
-               value={gitlabAccessToken} id="gitlabAccessToken" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+               value={gitlabAccessToken} type="password" id="gitlabAccessToken" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
         <input title="Gitlab Project Id" ref={inputRef} placeholder="Gitlab Project Id" onChange={(e) => setGitlabProjectId(e.target.value)}
                value={gitlabProjectId} id="gitlabProjectId" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
       </>
