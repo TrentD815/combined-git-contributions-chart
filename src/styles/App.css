@@ -1,7 +1,7 @@
 :root {
   --bg: #fff;
   --header-bg: #f4f5f6;
-  --button-bg: #9b4dca;
+  --button-bg: #56b2bb;
   --button-disabled: #cfd0d4;
   --button-disabled-border: #cfd0d4;
   --button-text: #fff;
@@ -96,6 +96,10 @@ h1 {
 
 h3 {
   margin-bottom: .3rem;
+  display: flex;
+}
+h3 span {
+  margin-left: .25rem
 }
 h4 {
   margin-top: 1em;
