@@ -18,7 +18,7 @@ from the respective marketplace. And even then it's only your contributions
 from that VCS.
 
 The best deployed service I could find was [this](https://github.com/sallar/github-contributions-chart). 
-The UI is very clean and the generation works well for GitHub. My project forks this
+The UI is very clean and the generation works well for GitHub. This project forks this
 and expands it to multiple VCS.
    
 Main benefits:
@@ -40,11 +40,20 @@ Main downsides:
 - Your username (for authentication)
 - Your display name (for filtering commits)
 - A pre-generated app password with the correct permissions. See [this](https://support.atlassian.com/bitbucket-cloud/docs/create-an-app-password/) link for how to create an app password
-  - Note: The app password must have `REPO_READ` permission for the specified repositories
+  - Note: The app password must have the `REPO_READ` permission
 - The name of your workspace and repository names
 
+### For Gitlab
+- A valid Gitlab account
+- Your display name (for filtering commits)
+- A pre generated access token with the correct permissions. See [this](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) 
+link for how to create a personal access token
+  - Note: The access token must have the `read_repository` permission
+- The Project Id for each repo. Found within the 'More Actions' or 3 vertical dots menu on the main page of each project
+![gitlabProjectIdLocation.png](public/gitlabProjectIdLocation.png)
+
 ### Future Integrations: 
-- Gitlab, AWS Code Commit, & Azure DevOps
+- AWS Code Commit, & Azure DevOps
 
 ## Install and run locally
 - Install the packages using NPM:

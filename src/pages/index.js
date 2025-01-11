@@ -31,7 +31,7 @@ const App = () => {
   // Gitlab
   const [gitlabDisplayName, setGitlabDisplayName] = useState("")
   const [gitlabAccessToken, setGitlabAccessToken] = useState("")
-  const [gitlabProjectId, setGitlabProjectId] = useState("")
+  const [gitlabProjectIdChips, setGitlabProjectIdChips] = useState([])
   const [showGitlabForm, setShowGitlabForm] = useState(false)
   //VCS
   const animatedComponents = makeAnimated();
@@ -54,7 +54,7 @@ const App = () => {
     setData(null)
     setUsername(username)
     const bitbucketBody = { bitbucketUsername, bitbucketDisplayName, bitbucketAppPassword, bitbucketWorkspace, bitbucketRepoChips }
-    const gitlabBody = { gitlabDisplayName, gitlabAccessToken, gitlabProjectId }
+    const gitlabBody = { gitlabDisplayName, gitlabAccessToken, gitlabProjectIdChips }
 
     let currentVCS = []
     for (const vcs of vcsSelection) {
@@ -114,6 +114,9 @@ const App = () => {
   const handleBitbucketChipChange = (chips) => {
     setBitbucketRepoChips(chips)
   }
+  const handleGitlabChipChange = (chips) => {
+    setGitlabProjectIdChips(chips)
+  }
 
   const onDownload = (e) => {
     e.preventDefault()
@@ -164,7 +167,7 @@ const App = () => {
     })
   }
 
-  const _renderGithubButton = () => {
+  const renderGithubButton = () => {
     return (
       <div className="App-github-button">
         <a className="github-button" href="https://github.com/TrentD815/combined-git-contributions-chart"
@@ -175,23 +178,21 @@ const App = () => {
     )
   }
 
-  const _renderLoading = () => {
+  const renderLoading = () => {
     return (
       <div className="App-centered">
         <div className="App-loading">
           <img src={"/loading.gif"} alt="Loading..." width={200} />
-          <p>Please wait, pulling data from ...</p>
+          <p>Please wait, pulling data from your selected version control systems...This may take a few minutes depending on the number
+          of repositories and quantity of commits...</p>
         </div>
       </div>
     )
   }
 
-  const _renderGraphs = () => {
+  const renderGraphs = () => {
     return (
-      <div
-        className="App-result"
-        style={{ display: data !== null && !loading ? "block" : "none" }}
-      >
+      <div className="App-result" style={{ display: data !== null && !loading ? "block" : "none" }}>
         <p>Your chart is ready!</p>
 
         {data !== null && (
@@ -216,7 +217,7 @@ const App = () => {
     )
   }
 
-  const _renderForm = () => {
+  const renderForm = () => {
     return (
         <form onSubmit={handleSubmit}>
           <Select
@@ -256,13 +257,16 @@ const App = () => {
   }
 
   const gitlabFormNotComplete = () => {
-    return showGitlabForm && (gitlabProjectId.length <= 0 || gitlabDisplayName.length <=0 || gitlabAccessToken.length <= 0)
+    return showGitlabForm && (gitlabProjectIdChips.length <= 0 || gitlabDisplayName.length <=0 || gitlabAccessToken.length <= 0)
   }
 
   const githubFormItems = () => {
     return (
       <>
-        <h3>GitHub <TbBrandGithub size={18} /> </h3>
+        <h3>
+          <TbBrandGithub color={"black"} size={30}/>
+          <span>GitHub</span>
+        </h3>
         <input ref={inputRef} placeholder="GitHub Username" onChange={(e) => setUsername(e.target.value)}
                value={username} id="username" autoCorrect="off" autoCapitalize="none" autoFocus autoComplete="false" />
       </>
@@ -272,7 +276,9 @@ const App = () => {
   const bitbucketFormItems = () => {
     return (
       <>
-        <h3>Bitbucket <TbBrandBitbucket size={18} /> </h3>
+        <h3><TbBrandBitbucket color={"blue"} size={30}/>
+          <span>Bitbucket</span>
+        </h3>
         <input title="Bitbucket Username" ref={inputRef} placeholder="Bitbucket Username" onChange={(e) => setBitbucketUsername(e.target.value)}
                value={bitbucketUsername} id="bitbucketUsername" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
         <input title="Bitbucket Display Name" ref={inputRef} placeholder="Bitbucket Display Name" onChange={(e) => setBitbucketDisplayName(e.target.value)}
@@ -290,22 +296,24 @@ const App = () => {
   const gitlabFormItems = () => {
     return (
       <>
-        <h3>Gitlab <TbBrandGitlab size={18} /></h3>
+        <h3><TbBrandGitlab color={"orange"} size={30}/>
+          <span>Gitlab</span>
+        </h3>
         <input title="Gitlab Display Name" ref={inputRef} placeholder="Gitlab Display Name" onChange={(e) => setGitlabDisplayName(e.target.value)}
                value={gitlabDisplayName} id="gitlabDisplayName" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
         <input title="Gitlab Access Token" ref={inputRef} placeholder="Gitlab Access Token" onChange={(e) => setGitlabAccessToken(e.target.value)}
                value={gitlabAccessToken} type="password" id="gitlabAccessToken" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
-        <input title="Gitlab Project Id" ref={inputRef} placeholder="Gitlab Project Id" onChange={(e) => setGitlabProjectId(e.target.value)}
-               value={gitlabProjectId} id="gitlabProjectId" autoComplete="false" autoCorrect="off" autoCapitalize="none" />
+        <MuiChipsInput title="Gitlab Project Ids" color="warning" placeholder="Type and enter your Gitlab project ids" fullWidth
+                       variant="filled" id="gitlabProjectIdChips" value={gitlabProjectIdChips} onChange={handleGitlabChipChange} />
       </>
     )
   }
 
-  const _renderVCSLogos = () => {
+  const renderVCSLogos = () => {
     return (
-      <div className="App-buttons">
+      <span className="App-buttons">
         GitHub | Bitbucket | Gitlab
-      </div>
+      </span>
     )
   }
 
@@ -337,22 +345,22 @@ const App = () => {
           <h1>Combined VCS Contributions Chart Generator</h1>
           <h4>All your contributions in one image!</h4>
         </div>
-        {_renderVCSLogos()}
-        {_renderForm()}
+        {renderVCSLogos()}
+        {renderForm()}
         <ThemeSelector
           currentTheme={theme}
           onChangeTheme={(themeName) => setTheme(themeName)}
         />
-        {_renderGithubButton()}
+        {renderGithubButton()}
         <footer>
           <p>Not affiliated with GitHub, Gitlab, Atlassian, Amazon, or Microsoft</p>
           {_renderDownloadAsJSON()}
         </footer>
       </header>
       <section className="App-content" ref={contentRef}>
-        {loading && _renderLoading()}
+        {loading && renderLoading()}
         {error !== null && _renderError()}
-        {_renderGraphs()}
+        {renderGraphs()}
       </section>
     </div>
   )
